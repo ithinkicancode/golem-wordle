@@ -58,4 +58,4 @@ Then upload the Wasm binary and run it on Golem Cloud (skip to step 6 if you hav
   wordle golem:wordle/api/game-status --parameters '[]'
   ```
 
-Have fun!
+Check out my other Golem projects [here](https://github.com/ithinkicancode/golem-fibonacci) (also a recommended project structure/template) and [here](https://github.com/ithinkicancode/golem-todo-list). Have fun!
