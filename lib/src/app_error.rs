@@ -1,0 +1,66 @@
+use crate::core::WORDS_FILE_PATH;
+use error_stack::Context;
+use std::fmt::{
+    self, Display, Formatter,
+};
+
+pub type AppResult<T> =
+    error_stack::Result<T, AppError>;
+
+pub trait AppResultExt<T> {
+    fn err_as_string(
+        self,
+    ) -> Result<T, String>;
+}
+impl<T> AppResultExt<T>
+    for AppResult<T>
+{
+    fn err_as_string(
+        self,
+    ) -> Result<T, String> {
+        self.map_err(|e| e.to_string())
+    }
+}
+
+#[derive(Debug)]
+pub enum AppError {
+    NoWords,
+    StdIoRead,
+    InvalidCharset,
+    InvalidGuessLength(usize),
+}
+impl Display for AppError {
+    fn fmt(
+        &self,
+        f: &mut Formatter,
+    ) -> fmt::Result {
+        use AppError::*;
+
+        match self {
+            NoWords => {
+                write!(f, "[{:?}] No words found in file.", NoWords)
+            }
+            StdIoRead => {
+                write!(f, "[{:?}] Failed to read stdio.", StdIoRead)
+            }
+            InvalidCharset => {
+                write!(
+                    f,
+                    "[{:?}] The Words file ('{}') contains invalid UTF-8 characters",
+                    InvalidCharset,
+                    WORDS_FILE_PATH,
+                )
+            }
+            InvalidGuessLength(
+                expected_len,
+            ) => {
+                write!(
+                    f,
+                    "[InvalidGuessLength] Your guess word must be {} letters long.",
+                    expected_len
+                )
+            }
+        }
+    }
+}
+impl Context for AppError {}

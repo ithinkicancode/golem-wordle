@@ -1,0 +1,17 @@
+package golem:wordle
+
+interface api {
+
+  type game-result = result<list<string>, string>
+
+  new-game: func() -> game-result
+
+  continue-game: func(guess: string) -> game-result
+
+  game-status: func() -> game-result
+
+}
+
+world wordle {
+  export api
+}

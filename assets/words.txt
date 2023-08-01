@@ -1,0 +1,2 @@
+cloud CloudNative wasm WebAssembly platform invincible serverless stateful reliable durable distributed scalable
+elastic resilient robust reactive immortal persistent

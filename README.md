@@ -1,6 +1,8 @@
 # Playing Wordle on Golem Cloud
 
-Assuming you have set up Rust's toolchain and installed `cargo-component` (if not, please refer to both documentations of `rustup`  and Golem for instructions.), build our Wasm binary by running the following command:
+I'm assuming you have set up Rust's toolchain and installed `cargo-component`. If not, please refer to [Golem Cloud documentation](https://preview1.golem.cloud/learn/rust) for instructions.
+
+With that done, let's start by building our Wasm binary with the following command:
 
   ```bash
   cargo component build --release -p wasm
@@ -8,7 +10,7 @@ Assuming you have set up Rust's toolchain and installed `cargo-component` (if no
 
 Then upload the Wasm binary and run it on Golem Cloud (skip to step 6 if you have already set up Golem CLI):
 
-1. Download the latest version of Golem CLI at https://release.api.golem.cloud/ziverge/golem-cli.
+1. Download the latest version of Golem CLI by [signing up](https://golem.cloud/sign-up) for the Developer Preview.
 2. Unzip the bundle to a directory.
 3. Define a shell alias to the Golem CLI for convenience. For example:
 
