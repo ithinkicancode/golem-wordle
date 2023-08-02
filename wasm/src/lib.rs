@@ -1,4 +1,4 @@
-use bindings::{export, exports::golem::fib::api::*};
+use bindings::{export, exports::golem::wordle::api::*};
 use lib::{
     app_error::AppResultExt,
     core::{pick_word, with_app_state},
@@ -57,4 +57,4 @@ impl Api for Wordle {
         Ok(result)
     }
 }
-export!(Fib);
+export!(Wordle);

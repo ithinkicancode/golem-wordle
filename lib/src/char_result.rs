@@ -15,33 +15,6 @@ impl CharResult {
         Self { char, result }
     }
 
-    pub(crate) fn correct(
-        char: char,
-    ) -> Self {
-        Self::new(
-            char,
-            GuessResult::Correct,
-        )
-    }
-
-    pub(crate) fn absent(
-        char: char,
-    ) -> Self {
-        Self::new(
-            char,
-            GuessResult::Absent,
-        )
-    }
-
-    pub(crate) fn present(
-        char: char,
-    ) -> Self {
-        Self::new(
-            char,
-            GuessResult::Present,
-        )
-    }
-
     pub(crate) fn display(
         attempt: &[CharResult],
     ) -> String {
@@ -73,6 +46,35 @@ mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
     use test_case::test_case;
+
+    impl CharResult {
+        pub(crate) fn correct(
+            char: char,
+        ) -> Self {
+            Self::new(
+                char,
+                GuessResult::Correct,
+            )
+        }
+
+        pub(crate) fn absent(
+            char: char,
+        ) -> Self {
+            Self::new(
+                char,
+                GuessResult::Absent,
+            )
+        }
+
+        pub(crate) fn present(
+            char: char,
+        ) -> Self {
+            Self::new(
+                char,
+                GuessResult::Present,
+            )
+        }
+    }
 
     // fn display()
     #[test_case(

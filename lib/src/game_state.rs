@@ -6,7 +6,7 @@ use chrono::{DateTime, Duration, Utc};
 use std::collections::HashSet;
 
 const GAME_INSTRUCTION: &str =
-  "You can continue this game by using the `continue-game` command, or you can start a new game by using the `new-game` command.";
+    "You can continue this game by using the `continue-game` command, or you can start a new game by using the `new-game` command.";
 
 pub struct GameState<'a> {
     word: &'a str,
@@ -90,7 +90,7 @@ impl<'a> GameState<'a> {
             attempts.insert(0, format!("Here are your previous {} guesses.", count));
 
             attempts.push(
-              format!("Last time you played was on {}.", self.last_update)
+                format!("Last time you played was on {}.", self.last_update)
             );
 
             attempts
