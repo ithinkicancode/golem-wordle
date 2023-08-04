@@ -78,7 +78,7 @@ mod tests {
 
     // fn display()
     #[test_case(
-        vec![
+        &vec![
             CharResult::correct('a'),
             CharResult::absent('b'),
             CharResult::present('c'),
@@ -87,12 +87,12 @@ mod tests {
         "Non-empty Vec<CharResult> should result in a readable string"
     )]
     #[test_case(
-        vec![],
+        &vec![],
         "[]" ;
         "Empty Vec<CharResult> should result as '[]'"
     )]
     fn display_should_transform_char_results_into_formatted_string(
-        attempt: Vec<CharResult>,
+        attempt: &[CharResult],
         expected: &str,
     ) {
         let actual =

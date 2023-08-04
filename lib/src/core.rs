@@ -177,27 +177,27 @@ mod tests {
 
     #[test_case(
         "Hello",
-        vec!["hello"] ;
+        &vec!["hello"] ;
         "single-item vec when the input byte array has one word."
     )]
     #[test_case(
         "golem is invincible",
-        GOLEM_IS_INVINCIBLE.to_vec() ;
+        GOLEM_IS_INVINCIBLE ;
         "multiple-item vec when the input byte array has multiple words."
     )]
     #[test_case(
         " golem     is \n invincible ",
-        GOLEM_IS_INVINCIBLE.to_vec() ;
+        GOLEM_IS_INVINCIBLE ;
         "multiple-item vec when the input byte array has multiple words and multiple newlines."
     )]
     #[test_case(
         "    golem   \n    is \n invincible ",
-        GOLEM_IS_INVINCIBLE.to_vec() ;
+        GOLEM_IS_INVINCIBLE ;
         "multiple-item vec when the input byte array has multiple words and even more multiple newlines."
     )]
     fn words_from_should_produce_word_vec_from_byte_array(
         input: &str,
-        expected: Vec<&str>,
+        expected: &[&str],
     ) {
         let bytes = input.as_bytes();
         let actual =

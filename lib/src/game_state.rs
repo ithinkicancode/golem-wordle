@@ -50,10 +50,10 @@ impl<'a> GameState<'a> {
 
     pub(crate) fn last_update_older_than(
         &self,
-        duration: Duration,
+        duration: &Duration,
     ) -> bool {
         (Utc::now() - self.last_update)
-            > duration
+            > *duration
     }
 
     pub(crate) fn find_by(

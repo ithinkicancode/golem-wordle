@@ -79,7 +79,7 @@ impl SessionState {
                     .collect();
 
                 let mut summaries =
-                    if game_state.last_update_older_than(Duration::minutes(5)) {
+                    if game_state.last_update_older_than(&Duration::minutes(5)) {
                         game_state.describe()
                     } else {
                         vec![]
