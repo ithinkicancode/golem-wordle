@@ -1,5 +1,6 @@
 use crate::core::WORDS_FILE_PATH;
 use error_stack::Context;
+use kinded::Kinded;
 use std::fmt::{
     self, Display, Formatter,
 };
@@ -22,7 +23,7 @@ impl<T> AppResultExt<T>
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Kinded)]
 pub enum AppError {
     NoWords,
     StdIoRead,
@@ -56,7 +57,8 @@ impl Display for AppError {
             ) => {
                 write!(
                     f,
-                    "[InvalidGuessLength] Your guess word must be {} letters long.",
+                    "[{:?}] Your guess word must be {} letters long.",
+                    AppErrorKind::InvalidGuessLength,
                     expected_len
                 )
             }
