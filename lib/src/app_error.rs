@@ -30,6 +30,7 @@ pub enum AppError {
     InvalidCharset,
     InvalidGuessLength(usize),
 }
+
 impl Display for AppError {
     fn fmt(
         &self,

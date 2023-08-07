@@ -5,7 +5,7 @@ use crate::{
     game_state::GameState,
 };
 use chrono::Duration;
-use error_stack::report;
+use error_stack::bail;
 
 #[derive(Debug, PartialEq)]
 pub enum SessionState {
@@ -37,9 +37,9 @@ impl SessionState {
         if user_input.len()
             != word_length
         {
-            return Err(
-                report!(AppError::InvalidGuessLength(word_length))
-            );
+            bail!(
+                AppError::InvalidGuessLength(word_length)
+            )
         }
 
         let user_input =

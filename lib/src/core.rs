@@ -6,7 +6,7 @@ use crate::{
     app_state::AppState,
 };
 use error_stack::{
-    bail, report, IntoReport, ResultExt,
+    bail, IntoReport, ResultExt,
 };
 use once_cell::sync::Lazy;
 use rand::Rng;
@@ -124,7 +124,7 @@ pub fn pick_word<'a>(
 
         Ok(chosen_word)
     } else {
-        Err(report!(AppError::NoWords))
+        bail!(AppError::NoWords)
     }
 }
 
