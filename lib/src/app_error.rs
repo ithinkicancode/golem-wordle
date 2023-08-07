@@ -66,3 +66,19 @@ impl Display for AppError {
     }
 }
 impl Context for AppError {}
+
+#[cfg(test)]
+mod tests {
+
+    #[macro_export]
+    macro_rules! assert_app_error {
+        ($actual:ident, $expected:ident) => {
+            pretty_assertions::assert_eq!(
+                $actual
+                    .unwrap_err()
+                    .to_string(),
+                $expected.to_string()
+            );
+        };
+    }
+}

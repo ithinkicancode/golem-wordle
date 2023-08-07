@@ -131,6 +131,7 @@ pub fn pick_word<'a>(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::assert_app_error;
     use error_stack::{report, Report};
     use maplit::{hashmap, hashset};
     use pretty_assertions::assert_eq;
@@ -216,11 +217,9 @@ mod tests {
 
         let actual = words_from(bytes);
 
-        assert_eq!(
-            actual
-                .unwrap_err()
-                .to_string(),
-            expected_error.to_string()
+        assert_app_error!(
+            actual,
+            expected_error
         );
     }
 

@@ -113,9 +113,11 @@ impl SessionState {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::assert_app_error;
     use pretty_assertions::assert_eq;
 
     const WORD: &str = "golem";
+
     const WRONG_ANSWER: &str = "abcde";
 
     // fn determine_by()
@@ -134,11 +136,8 @@ mod tests {
             );
         let expected = AppError::InvalidGuessLength(WORD.len());
 
-        assert_eq!(
-            actual
-                .unwrap_err()
-                .to_string(),
-            expected.to_string()
+        assert_app_error!(
+            actual, expected
         );
     }
 
