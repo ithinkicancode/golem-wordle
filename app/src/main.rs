@@ -1,4 +1,4 @@
-use error_stack::{IntoReport, ResultExt};
+use error_stack::ResultExt;
 use lib::{
     app_error::{AppError, AppResult},
     core::{pick_word, with_app_state},
@@ -21,7 +21,6 @@ fn main() -> AppResult<()> {
             let mut user_input = String::new();
             io::stdin()
                 .read_line(&mut user_input)
-                .into_report()
                 .change_context(AppError::StdIoRead)?;
 
             let session_state = SessionState::determined_by(

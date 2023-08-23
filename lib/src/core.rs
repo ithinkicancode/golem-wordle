@@ -5,9 +5,7 @@ use crate::{
     },
     app_state::AppState,
 };
-use error_stack::{
-    bail, IntoReport, ResultExt,
-};
+use error_stack::{bail, ResultExt};
 use once_cell::sync::Lazy;
 use rand::Rng;
 use std::{
@@ -74,7 +72,6 @@ fn words_from(
     bytes: &[u8],
 ) -> AppResult<Vec<String>> {
     let file_content = from_utf8(bytes)
-        .into_report()
         .change_context(
             AppError::InvalidCharset,
         )?
