@@ -232,11 +232,31 @@ mod tests {
         "" ;
         "AppError::NoWords when the input byte array is empty."
     )]
-    fn words_from_should_fail_from_byte_array_with_no_words(
+    fn words_from_should_fail_when_input_byte_array_contains_no_words(
         input: &str,
     ) {
         words_from_base_fail_test(
             report!(AppError::NoWords),
+            input,
+        );
+    }
+
+    #[allow(
+        invalid_from_utf8_unchecked
+    )]
+    #[test_case(
+        unsafe {
+            std::str::from_utf8_unchecked(
+                b"cl\x82ippy",
+            )
+        };
+        "AppError::InvalidCharset when file contains non-UTF-8 characters."
+    )]
+    fn words_from_should_fail_when_input_byte_array_contains_invalid_charset(
+        input: &str,
+    ) {
+        words_from_base_fail_test(
+            report!(AppError::InvalidCharset),
             input,
         );
     }

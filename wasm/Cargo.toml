@@ -17,4 +17,4 @@ path = "wit"
 
 [dependencies]
 lib = { path = "../lib" }
-wit-bindgen = "~0.9.0"
+wit-bindgen = "~0.10.0"
