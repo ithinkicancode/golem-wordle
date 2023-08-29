@@ -6,6 +6,14 @@ use crate::{
 };
 use chrono::Duration;
 use error_stack::bail;
+use once_cell::sync::Lazy;
+
+const IDLE_DURATION: i64 = 5;
+
+static IDLE_TIME: Lazy<Duration> =
+    Lazy::new(|| {
+        Duration::minutes(IDLE_DURATION)
+    });
 
 #[derive(Debug, PartialEq)]
 pub enum SessionState {
@@ -15,6 +23,7 @@ pub enum SessionState {
     Won(String),
     Lost(String),
 }
+
 impl SessionState {
     fn won() -> Self {
         SessionState::Won("Well done, you've guessed the word!".to_string())
@@ -79,7 +88,9 @@ impl SessionState {
                     .collect();
 
                 let mut summaries =
-                    if game_state.last_update_older_than(&Duration::minutes(5)) {
+                    if game_state.last_update_older_than(
+                        &IDLE_TIME
+                    ) {
                         game_state.describe()
                     } else {
                         vec![]
@@ -113,19 +124,33 @@ impl SessionState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assert_app_error;
+    use crate::{
+        assert_app_error,
+        clock::{
+            tests::TestClock, RealClock,
+        },
+        game_state::GAME_INSTRUCTION,
+    };
     use pretty_assertions::assert_eq;
 
     const WORD: &str = "golem";
 
+    const WORD_LENGTH: usize =
+        WORD.len();
+
     const WRONG_ANSWER: &str = "abcde";
+
+    const PREVIOUS_MOVE: &str =
+        "['a' => Absent, 'b' => Absent, 'c' => Absent, 'd' => Absent, 'e' => Present]";
 
     // fn determine_by()
     #[test]
     fn determined_by_should_return_err_when_user_input_length_is_not_matching(
     ) {
         let mut game_state =
-            GameState::of(WORD);
+            GameState::of(
+                WORD, &RealClock,
+            );
 
         let user_input = "";
 
@@ -145,7 +170,9 @@ mod tests {
     fn determined_by_should_return_win_when_user_guesses_it_on_first_try(
     ) {
         let mut game_state =
-            GameState::of(WORD);
+            GameState::of(
+                WORD, &RealClock,
+            );
         let session_state =
             SessionState::determined_by(WORD, &mut game_state).unwrap();
 
@@ -162,10 +189,12 @@ mod tests {
     }
 
     fn test_determined_by(
-        args: TestArgs,
+        args: &TestArgs,
     ) {
         let mut game_state =
-            GameState::of(WORD);
+            GameState::of(
+                WORD, &RealClock,
+            );
 
         let attempts = args.last_attempt
             ..=(game_state
@@ -176,19 +205,134 @@ mod tests {
             let session_state =
                 SessionState::determined_by(WRONG_ANSWER, &mut game_state).unwrap();
 
+            let summaries = vec![
+                format!("Your guess was '{}'.", WRONG_ANSWER),
+                format!(
+                    "Here's how you did: {}.",
+                    PREVIOUS_MOVE
+                ),
+                format!("You now have {} attempts left.", n)
+            ];
+
             assert_eq!(
                 session_state,
-                SessionState::InProgress {
-                    summaries: vec![
-                        format!("Your guess was '{}'.", WRONG_ANSWER),
-                        format!(
-                            "Here's how you did: {}.",
-                            "['a' => Absent, 'b' => Absent, 'c' => Absent, 'd' => Absent, 'e' => Present]"
-                        ),
-                        format!("You now have {} attempts left.", n)
-                    ]
-                }
+                SessionState::InProgress { summaries }
             );
+        }
+
+        let session_state =
+            SessionState::determined_by(args.last_answer, &mut game_state).unwrap();
+
+        assert_eq!(
+            session_state,
+            args.expected
+        );
+    }
+
+    fn test_determined_by_with_test_clock(
+        args: &TestArgs,
+    ) {
+        let year = 2000;
+        let month = 1;
+        let day = 1;
+        let hour = 1;
+        let mut minute = 0;
+
+        let clock = TestClock::init(
+            year, month, day, hour,
+            minute,
+        );
+
+        let idle_minutes =
+            IDLE_DURATION + 1;
+
+        let idle_time =
+            Duration::minutes(
+                idle_minutes,
+            );
+
+        let mut game_state =
+            GameState::of(WORD, &clock);
+
+        let attempts = args.last_attempt
+            ..=(game_state
+                .attempts_left()
+                - 1);
+
+        let mut i = 0;
+
+        for n in attempts.rev() {
+            clock.advance(idle_time);
+
+            let session_state =
+                SessionState::determined_by(WRONG_ANSWER, &mut game_state).unwrap();
+
+            let mut summaries = vec![
+                format!(
+                    "Welcome to Golem Wordle! Please describe Golem in a {}-letter word.",
+                    WORD_LENGTH
+                )
+            ];
+
+            if i > 0 {
+                summaries.push(
+                    format!("Here are your previous {} guesses.", i),
+                );
+                summaries.extend(vec![
+                        PREVIOUS_MOVE
+                            .into();
+                        i
+                    ]);
+
+                minute +=
+                    idle_minutes as u32;
+
+                summaries.push(
+                    format!(
+                        "Last time you played was on {}-{:0>2}-{:0>2} {:0>2}:{:0>2}:00 UTC.",
+                        year,
+                        month,
+                        day,
+                        hour,
+                        minute
+                    )
+                );
+            } else {
+                summaries.push(
+                    format!(
+                        "You started this game on {}-{:0>2}-{:0>2} {:0>2}:{:0>2}:00 UTC.",
+                        year,
+                        month,
+                        day,
+                        hour,
+                        minute
+                    )
+                );
+            }
+
+            summaries.extend(vec![
+                format!(
+                    "You had {} attempts left.",
+                    n + 1
+                ),
+                GAME_INSTRUCTION.into(),
+                format!(
+                    "Your guess was '{}'.",
+                    WRONG_ANSWER
+                ),
+                format!(
+                    "Here's how you did: {}.",
+                    PREVIOUS_MOVE
+                ),
+                format!("You now have {} attempts left.", n)
+            ]);
+
+            assert_eq!(
+                session_state,
+                SessionState::InProgress { summaries }
+            );
+
+            i += 1;
         }
 
         let session_state =
@@ -203,33 +347,39 @@ mod tests {
     #[test]
     fn determined_by_should_return_win_after_playing_a_full_game(
     ) {
-        test_determined_by(TestArgs {
+        let args = TestArgs {
             last_attempt: 1,
             last_answer: WORD,
             expected: SessionState::won(
             ),
-        });
+        };
+        test_determined_by(&args);
+        test_determined_by_with_test_clock(&args);
     }
 
     #[test]
     fn determined_by_should_return_win_after_user_guesses_it_without_playing_a_full_game(
     ) {
-        test_determined_by(TestArgs {
+        let args = TestArgs {
             last_attempt: 2,
             last_answer: WORD,
             expected: SessionState::won(
             ),
-        });
+        };
+        test_determined_by(&args);
+        test_determined_by_with_test_clock(&args);
     }
 
     #[test]
     fn determined_by_should_return_lose_after_playing_a_full_game(
     ) {
-        test_determined_by(TestArgs {
+        let args = TestArgs {
             last_attempt: 1,
             last_answer: WRONG_ANSWER,
             expected:
                 SessionState::lost(WORD),
-        });
+        };
+        test_determined_by(&args);
+        test_determined_by_with_test_clock(&args);
     }
 }

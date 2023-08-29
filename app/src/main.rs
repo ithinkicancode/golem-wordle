@@ -1,6 +1,7 @@
 use error_stack::ResultExt;
 use lib::{
     app_error::{AppError, AppResult},
+    clock::RealClock,
     core::{pick_word, with_app_state},
     session_state::SessionState,
 };
@@ -8,7 +9,8 @@ use std::io;
 
 fn main() -> AppResult<()> {
     with_app_state(|state| {
-        let game_state = state.new_game_with(pick_word)?;
+        let game_state =
+            state.new_game_with(pick_word, &RealClock)?;
 
         println!(
             "Welcome to Golem Wordle! Please describe Golem in a {}-letter word.",
@@ -24,7 +26,7 @@ fn main() -> AppResult<()> {
                 .change_context(AppError::StdIoRead)?;
 
             let session_state = SessionState::determined_by(
-                &user_input.trim(),
+                user_input.trim(),
                 game_state,
             );
             let session_state = match session_state {

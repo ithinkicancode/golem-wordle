@@ -1,11 +1,12 @@
 use crate::{
     char_result::CharResult,
+    clock::Clock,
     core::{char_map_from, CharMap},
 };
 use chrono::{DateTime, Duration, Utc};
 use std::collections::HashSet;
 
-const GAME_INSTRUCTION: &str =
+pub(crate) const GAME_INSTRUCTION: &str =
     "You can continue this game by using the `continue-game` command, or you can start a new game by using the `new-game` command.";
 
 pub struct GameState<'a> {
@@ -14,10 +15,12 @@ pub struct GameState<'a> {
     last_update: DateTime<Utc>,
     char_map: CharMap,
     attempts: Vec<Vec<CharResult>>,
+    clock: &'a dyn Clock,
 }
 impl<'a> GameState<'a> {
     pub(crate) fn of(
         word: &'a str,
+        clock: &'a impl Clock,
     ) -> Self {
         let char_map =
             char_map_from(word);
@@ -27,7 +30,8 @@ impl<'a> GameState<'a> {
             word_length: word.len(),
             char_map,
             attempts: vec![],
-            last_update: Utc::now(),
+            last_update: clock.now(),
+            clock,
         }
     }
 
@@ -37,7 +41,8 @@ impl<'a> GameState<'a> {
     ) {
         self.attempts.push(attempt);
 
-        self.last_update = Utc::now();
+        self.last_update =
+            self.clock.now();
     }
 
     pub(crate) fn word(&self) -> &str {
@@ -117,6 +122,7 @@ impl<'a> GameState<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::clock::RealClock;
     use chrono::{Datelike, TimeZone};
     use maplit::hashset;
     use once_cell::sync::Lazy;
@@ -137,7 +143,9 @@ mod tests {
         word: &str,
     ) -> GameState {
         let mut game_state =
-            GameState::of(word);
+            GameState::of(
+                word, &RealClock,
+            );
 
         game_state.last_update =
             *TEST_DATE_TIME;

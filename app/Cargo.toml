@@ -5,4 +5,4 @@ edition = "2021"
 
 [dependencies]
 lib = { path = "../lib" }
-error-stack = "~0.4.0"
+error-stack.workspace = true

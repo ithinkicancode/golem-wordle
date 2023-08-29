@@ -1,5 +1,5 @@
 use crate::{
-    app_error::AppResult,
+    app_error::AppResult, clock::Clock,
     game_state::GameState,
 };
 
@@ -33,16 +33,20 @@ impl<'a> AppState<'a> {
         &mut self,
         f: impl FnOnce()
             -> AppResult<&'a str>,
+        clock: &'a impl Clock,
     ) -> AppResult<&mut GameState<'a>>
     {
         let word = f()?;
 
         self.set_empty();
 
-        let result =
-            self.0.get_or_insert_with(
-                || GameState::of(word),
-            );
+        let result = self
+            .0
+            .get_or_insert_with(|| {
+                GameState::of(
+                    word, clock,
+                )
+            });
 
         Ok(result)
     }
@@ -51,6 +55,7 @@ impl<'a> AppState<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::clock::RealClock;
     use pretty_assertions::assert_eq;
 
     const DUMMY: &str = "dummy";
@@ -60,7 +65,9 @@ mod tests {
     fn set_empty_should_set_the_inner_element_to_none(
     ) {
         let dummy_game_state =
-            GameState::of(DUMMY);
+            GameState::of(
+                DUMMY, &RealClock,
+            );
 
         let mut app_state = AppState(
             Some(dummy_game_state),
@@ -80,7 +87,10 @@ mod tests {
         assert!(app_state.0.is_none());
 
         let game_state = app_state
-            .new_game_with(|| Ok(DUMMY))
+            .new_game_with(
+                || Ok(DUMMY),
+                &RealClock,
+            )
             .unwrap();
 
         assert_eq!(

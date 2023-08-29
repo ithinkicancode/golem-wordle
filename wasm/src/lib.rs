@@ -1,6 +1,7 @@
 use bindings::{export, exports::golem::wordle::api::*};
 use lib::{
     app_error::AppResultExt,
+    clock::RealClock,
     core::{pick_word, with_app_state},
     session_state::SessionState,
 };
@@ -17,7 +18,7 @@ struct Wordle;
 impl Api for Wordle {
     fn new_game() -> GameResult {
         with_app_state(|state| {
-            let game_state = state.new_game_with(pick_word).err_as_string()?;
+            let game_state = state.new_game_with(pick_word, &RealClock).err_as_string()?;
 
             Ok(game_state.describe())
         })

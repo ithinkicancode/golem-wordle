@@ -23,7 +23,7 @@ static WORDS: Lazy<Vec<String>> =
             .unwrap()
     });
 
-const WORD_POOL_SIZE: Lazy<usize> =
+static WORD_POOL_SIZE: Lazy<usize> =
     Lazy::new(|| WORDS.len());
 
 static mut APP_STATE: AppState =
