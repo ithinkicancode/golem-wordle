@@ -1,6 +1,7 @@
 use crate::core::WORDS_FILE_PATH;
 use error_stack::Context;
 use kinded::Kinded;
+use sealed::sealed;
 use std::fmt::{
     self, Display, Formatter,
 };
@@ -8,23 +9,13 @@ use std::fmt::{
 pub type AppResult<T> =
     error_stack::Result<T, AppError>;
 
-mod private {
-    pub trait SealedMarker<T> {}
-
-    impl<T> SealedMarker<T>
-        for super::AppResult<T>
-    {
-    }
-}
-
-pub trait AppResultExt<T>:
-    private::SealedMarker<T>
-{
+#[sealed]
+pub trait AppResultExt<T> {
     fn err_as_string(
         self,
     ) -> Result<T, String>;
 }
-
+#[sealed]
 impl<T> AppResultExt<T>
     for AppResult<T>
 {
