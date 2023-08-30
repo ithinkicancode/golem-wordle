@@ -8,11 +8,23 @@ use std::fmt::{
 pub type AppResult<T> =
     error_stack::Result<T, AppError>;
 
-pub trait AppResultExt<T> {
+mod private {
+    pub trait SealedMarker<T> {}
+
+    impl<T> SealedMarker<T>
+        for super::AppResult<T>
+    {
+    }
+}
+
+pub trait AppResultExt<T>:
+    private::SealedMarker<T>
+{
     fn err_as_string(
         self,
     ) -> Result<T, String>;
 }
+
 impl<T> AppResultExt<T>
     for AppResult<T>
 {
