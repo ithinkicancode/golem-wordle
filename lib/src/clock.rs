@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 
-type Gmt = DateTime<Utc>;
+pub(crate) type Gmt = DateTime<Utc>;
 
 pub trait Clock {
     fn now(&self) -> Gmt;

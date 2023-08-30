@@ -1,9 +1,9 @@
 use crate::{
     char_result::CharResult,
-    clock::Clock,
+    clock::{Clock, Gmt},
     core::{char_map_from, CharMap},
 };
-use chrono::{DateTime, Duration, Utc};
+use chrono::Duration;
 use std::collections::HashSet;
 
 pub(crate) const GAME_INSTRUCTION: &str =
@@ -12,7 +12,7 @@ pub(crate) const GAME_INSTRUCTION: &str =
 pub struct GameState<'a> {
     word: &'a str,
     word_length: usize,
-    last_update: DateTime<Utc>,
+    last_update: Gmt,
     char_map: CharMap,
     attempts: Vec<Vec<CharResult>>,
     clock: &'a dyn Clock,
@@ -57,7 +57,8 @@ impl<'a> GameState<'a> {
         &self,
         duration: &Duration,
     ) -> bool {
-        (Utc::now() - self.last_update)
+        (self.clock.now()
+            - self.last_update)
             > *duration
     }
 
@@ -123,21 +124,22 @@ impl<'a> GameState<'a> {
 mod tests {
     use super::*;
     use crate::clock::RealClock;
-    use chrono::{Datelike, TimeZone};
+    use chrono::{
+        Datelike, TimeZone, Utc,
+    };
     use maplit::hashset;
     use once_cell::sync::Lazy;
     use pretty_assertions::{
         assert_eq, assert_ne,
     };
 
-    const TEST_DATE_TIME: Lazy<
-        DateTime<Utc>,
-    > = Lazy::new(|| {
-        Utc.with_ymd_and_hms(
-            2312, 12, 18, 19, 23, 0,
-        )
-        .unwrap()
-    });
+    const TEST_DATE_TIME: Lazy<Gmt> =
+        Lazy::new(|| {
+            Utc.with_ymd_and_hms(
+                2312, 12, 18, 19, 23, 0,
+            )
+            .unwrap()
+        });
 
     fn new_test_game_state(
         word: &str,
