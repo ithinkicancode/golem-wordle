@@ -39,24 +39,24 @@ impl Display for AppError {
         &self,
         f: &mut Formatter,
     ) -> fmt::Result {
-        use AppError::*;
+        use AppError as E;
 
         match self {
-            NoWords => {
-                write!(f, "[{:?}] No words found in file.", NoWords)
+            E::NoWords => {
+                write!(f, "[{:?}] No words found in file.", E::NoWords)
             }
-            StdIoRead => {
-                write!(f, "[{:?}] Failed to read stdio.", StdIoRead)
+            E::StdIoRead => {
+                write!(f, "[{:?}] Failed to read stdio.", E::StdIoRead)
             }
-            InvalidCharset => {
+            E::InvalidCharset => {
                 write!(
                     f,
                     "[{:?}] The Words file ('{}') contains invalid UTF-8 characters",
-                    InvalidCharset,
+                    E::InvalidCharset,
                     WORDS_FILE_PATH,
                 )
             }
-            InvalidGuessLength(
+            E::InvalidGuessLength(
                 expected_len,
             ) => {
                 write!(
