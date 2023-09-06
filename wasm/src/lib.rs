@@ -1,4 +1,6 @@
-use bindings::{export, exports::golem::wordle::api::*};
+cargo_component_bindings::generate!();
+
+use crate::bindings::exports::golem::wordle::api::*;
 use lib::{
     app_error::AppResultExt,
     clock::RealClock,
@@ -13,9 +15,9 @@ fn no_game_in_progress() -> Vec<String> {
     ]
 }
 
-struct Wordle;
+struct Component;
 
-impl Api for Wordle {
+impl Guest for Component {
     fn new_game() -> GameResult {
         with_app_state(|state| {
             let game_state = state.new_game_with(pick_word, &RealClock).err_as_string()?;
@@ -27,7 +29,7 @@ impl Api for Wordle {
     fn continue_game(player_guess: String) -> GameResult {
         with_app_state(|state| {
             let messages = if let Some(game_state) = state.game_state_as_mut() {
-                let session_state = SessionState::determined_by(&player_guess.trim(), game_state)?;
+                let session_state = SessionState::determined_by(player_guess.trim(), game_state)?;
 
                 match session_state {
                     SessionState::InProgress { summaries } => summaries,
@@ -58,4 +60,3 @@ impl Api for Wordle {
         Ok(result)
     }
 }
-export!(Wordle);

@@ -5,7 +5,6 @@ edition = "2021"
 
 [lib]
 path = "src/lib.rs"
-name = "wordle"
 crate-type = ["cdylib"]
 
 [profile.release]
@@ -17,4 +16,5 @@ path = "wit"
 
 [dependencies]
 lib = { path = "../lib" }
-wit-bindgen = "~0.11.0"
+quote = "1.0.33"
+cargo-component-bindings = { git = "https://github.com/bytecodealliance/cargo-component", rev = "e57d1d1405ed2d76f1f3d8647480dea700379ff8" }

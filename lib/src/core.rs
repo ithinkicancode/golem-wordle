@@ -16,6 +16,7 @@ use std::{
 pub(crate) const WORDS_FILE_PATH: &str =
     "assets/words.txt";
 
+#[allow(clippy::unwrap_used)]
 static WORDS: Lazy<Vec<String>> =
     Lazy::new(|| {
         load_words()
@@ -29,6 +30,7 @@ static WORD_POOL_SIZE: Lazy<usize> =
 static mut APP_STATE: AppState =
     AppState::empty();
 
+#[allow(unsafe_code)]
 pub fn with_app_state<T>(
     f: impl FnOnce(
         &mut AppState<'static>,

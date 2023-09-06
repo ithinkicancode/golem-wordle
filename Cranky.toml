@@ -1,0 +1,10 @@
+deny = [
+  "unsafe_code",
+  "clippy::expect_used",
+  "clippy::unwrap_used",
+]
+
+warn = [
+  "clippy::cast_possible_truncation",
+  "clippy::empty_structs_with_brackets",
+]

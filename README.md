@@ -11,34 +11,28 @@ With that done, let's start by building our Wasm binary with the following comma
 Then upload the Wasm binary and run it on Golem Cloud (skip to step 6 if you have already set up Golem CLI):
 
 1. Download the latest version of Golem CLI by [signing up](https://www.golem.cloud/sign-up) for the Developer Preview.
-2. Unzip the bundle to a directory.
-3. Define a shell alias to the Golem CLI for convenience. For example:
+2. Install Golem CLI by running `cargo install golem-cli`.
+3. Run `golem-cli account get` to go through the authorization process if you haven't done so.
+4. `cd` to our project directory.
+5. Run the following command to upload the binary.
 
   ```bash
-  alias golem='{path-to-directory}/golem-cli/bin/golem'
+  golem-cli template add --template-name wordle target/wasm32-wasi/release/wasm.wasm
   ```
 
-4. Run `golem account get` to go through the authorization process if you haven't done so.
-5. `cd` back to our project directory.
-6. Run the following command to upload the binary.
+6. Then run this command to create a worker for our app.
 
   ```bash
-  golem component add --component-name wordle target/wasm32-wasi/release/wordle.wasm
+  golem-cli worker add --worker-name wordle-wrkr-1 --template-name wordle
   ```
 
-7. Then run this command to create an instance of our app.
+7. Define a shell alias to invoke the instance. For example:
 
   ```bash
-  golem instance add --instance-name wordle-inst-1 --component-name wordle
+  alias wordle='golem-cli worker invoke-and-await --worker-name wordle-wrkr-1 --template-name wordle --function $*'
   ```
 
-8. Define another shell alias to invoke the instance. For example:
-
-  ```bash
-  alias wordle='golem instance invoke-and-await --instance-name wordle-inst-1 --component-name wordle --function $*'
-  ```
-
-9. Now let's play! 🎉
+8. Now let's play! 🎉
 
   * Run the `new-game` command to start a new game. The game will tell us the number of letters for the word we'll be guessing.
 
